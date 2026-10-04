@@ -1,0 +1,184 @@
+:root {
+    --indigo: #4f46e5;
+    --violet: #8b5cf6;
+    --pink: #ec4899;
+    --orange: #f97316;
+    --yellow: #facc15;
+    --green: #22c55e;
+    --cyan: #06b6d4;
+    --red: #ef4444;
+}
+
+body {
+    font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background:
+        radial-gradient(circle at 8% 0%, rgba(253, 224, 71, .35) 0, transparent 34%),
+        radial-gradient(circle at 92% 8%, rgba(244, 114, 182, .32) 0, transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(96, 165, 250, .35) 0, transparent 45%),
+        #f8fafc;
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #1e293b;
+}
+
+/* ===== Navbar ===== */
+.navbar-hocai {
+    background: linear-gradient(90deg, #4f46e5 0%, #9333ea 40%, #ec4899 75%, #f97316 100%);
+}
+.avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #fde047, #f97316);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #7c2d12;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .5);
+}
+
+/* ===== Card ===== */
+.card-lively {
+    border: 0;
+    border-radius: 1.1rem;
+    box-shadow: 0 6px 20px rgba(79, 70, 229, .10);
+    overflow: hidden;
+    background: #fff;
+}
+.card-hover { transition: transform .2s ease, box-shadow .2s ease; }
+.card-hover:hover { transform: translateY(-6px) rotate(-.3deg); box-shadow: 0 16px 34px rgba(236, 72, 153, .25); }
+
+/* Viền màu phía trên mỗi khối */
+.accent-indigo { border-top: 6px solid #6366f1; }
+.accent-cyan   { border-top: 6px solid #06b6d4; }
+.accent-green  { border-top: 6px solid #22c55e; }
+.accent-orange { border-top: 6px solid #f97316; }
+.accent-pink   { border-top: 6px solid #ec4899; }
+
+/* Mỗi thẻ bài tập một tông màu */
+.tone-0 { --t1: #6366f1; --t2: #a855f7; }
+.tone-1 { --t1: #ec4899; --t2: #f43f5e; }
+.tone-2 { --t1: #f97316; --t2: #fbbf24; }
+.tone-3 { --t1: #10b981; --t2: #06b6d4; }
+.tone-4 { --t1: #3b82f6; --t2: #6366f1; }
+.card-lively[class*="tone-"] { border-top: 6px solid var(--t1); }
+[class*="tone-"] .thumb-placeholder { background: linear-gradient(135deg, var(--t1), var(--t2)); }
+.card .thumb-placeholder.done { background: linear-gradient(135deg, #22c55e, #06b6d4); }
+.card .thumb-placeholder.late { background: linear-gradient(135deg, #f97316, #ef4444); }
+
+/* ===== Hero ===== */
+.hero {
+    background: linear-gradient(120deg, #6366f1 0%, #a855f7 38%, #ec4899 70%, #f97316 100%);
+    color: #fff;
+    border-radius: 1.25rem;
+    padding: 1.6rem 1.8rem;
+    box-shadow: 0 12px 32px rgba(168, 85, 247, .35);
+}
+.hero .progress { height: 14px; background: rgba(255, 255, 255, .3); border-radius: 99px; }
+.hero .progress-bar { background: linear-gradient(90deg, #fde047, #4ade80); border-radius: 99px; }
+
+/* ===== Stat cards ===== */
+.stat-card { border-radius: 1rem; padding: 1.1rem 1.25rem; color: #fff; display: flex; align-items: center; gap: 1rem; box-shadow: 0 8px 20px rgba(0, 0, 0, .12); }
+.stat-card .icon { font-size: 2.2rem; opacity: .95; }
+.stat-card .num { font-size: 2rem; font-weight: 800; line-height: 1; }
+.stat-1 { background: linear-gradient(135deg, #6366f1, #a855f7); }
+.stat-2 { background: linear-gradient(135deg, #22c55e, #06b6d4); }
+.stat-3 { background: linear-gradient(135deg, #f97316, #ef4444); }
+
+/* ===== Thumbnail ===== */
+.thumb { height: 150px; object-fit: cover; width: 100%; }
+.thumb-placeholder {
+    height: 150px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.2rem; color: rgba(255, 255, 255, .95);
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+}
+
+/* ===== Stepper (học sinh) ===== */
+.stepper { display: flex; align-items: center; gap: .5rem; background: #fff; border-radius: 1rem; padding: .9rem 1.1rem; box-shadow: 0 4px 14px rgba(0, 0, 0, .06); }
+.stepper .step { display: flex; align-items: center; gap: .6rem; font-weight: 700; color: #94a3b8; }
+.stepper .dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #e2e8f0; color: #64748b; font-weight: 800;
+}
+.stepper .line { flex: 1; height: 5px; border-radius: 5px; background: #e2e8f0; min-width: 30px; }
+.stepper .step.active { color: #ea580c; }
+.stepper .step.active .dot { background: linear-gradient(135deg, #fb923c, #f97316); color: #fff; box-shadow: 0 0 0 5px rgba(249, 115, 22, .22); }
+.stepper .step.done { color: #16a34a; }
+.stepper .step.done .dot { background: linear-gradient(135deg, #4ade80, #16a34a); color: #fff; }
+.stepper .line.done { background: linear-gradient(90deg, #4ade80, #16a34a); }
+
+/* ===== Khu vực upload ===== */
+.upload-zone {
+    border: 3px dashed #f472b6;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #fdf2f8, #fff7ed);
+    padding: 1.2rem;
+}
+.locked-box {
+    border: 3px dashed #fdba74;
+    border-radius: 1rem;
+    background: #fff7ed;
+    padding: 1.6rem;
+    text-align: center;
+    color: #9a3412;
+}
+.locked-box i { font-size: 2.6rem; color: #f97316; }
+.preview-img, .submission-img { max-height: 320px; object-fit: contain; border-radius: .8rem; background: #f1f5f9; }
+.assignment-img { max-height: 420px; object-fit: contain; border-radius: .8rem; background: #f1f5f9; }
+
+/* ===== Nút bấm nhiều màu ===== */
+.btn-brand, .btn-ok, .btn-orange, .btn-pink, .btn-cyan, .btn-yellow, .btn-logout, .btn-rainbow {
+    border: 0; font-weight: 700; border-radius: .8rem; padding: .55rem 1.2rem;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn-brand:hover, .btn-ok:hover, .btn-orange:hover, .btn-pink:hover,
+.btn-cyan:hover, .btn-yellow:hover, .btn-logout:hover, .btn-rainbow:hover {
+    transform: translateY(-2px); filter: brightness(1.06);
+}
+.btn-sm.btn-brand, .btn-sm.btn-ok, .btn-sm.btn-orange, .btn-sm.btn-pink,
+.btn-sm.btn-cyan, .btn-sm.btn-yellow, .btn-sm.btn-logout { padding: .35rem .85rem; }
+
+.btn-brand   { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+.btn-brand:hover   { color: #fff; box-shadow: 0 8px 18px rgba(99, 102, 241, .45); }
+.btn-ok      { background: linear-gradient(135deg, #4ade80, #16a34a); color: #fff; }
+.btn-ok:hover      { color: #fff; box-shadow: 0 8px 18px rgba(34, 197, 94, .45); }
+.btn-orange  { background: linear-gradient(135deg, #fbbf24, #f97316); color: #fff; }
+.btn-orange:hover  { color: #fff; box-shadow: 0 8px 18px rgba(249, 115, 22, .45); }
+.btn-pink    { background: linear-gradient(135deg, #f472b6, #e11d74); color: #fff; }
+.btn-pink:hover    { color: #fff; box-shadow: 0 8px 18px rgba(236, 72, 153, .45); }
+.btn-cyan    { background: linear-gradient(135deg, #22d3ee, #0ea5e9); color: #fff; }
+.btn-cyan:hover    { color: #fff; box-shadow: 0 8px 18px rgba(14, 165, 233, .45); }
+.btn-yellow  { background: linear-gradient(135deg, #fde047, #facc15); color: #713f12; }
+.btn-yellow:hover  { color: #713f12; box-shadow: 0 8px 18px rgba(250, 204, 21, .55); }
+.btn-logout  { background: linear-gradient(135deg, #fb7185, #ef4444); color: #fff; }
+.btn-logout:hover  { color: #fff; box-shadow: 0 8px 18px rgba(239, 68, 68, .45); }
+.btn-rainbow { background: linear-gradient(90deg, #6366f1, #ec4899, #f97316); color: #fff; }
+.btn-rainbow:hover { color: #fff; box-shadow: 0 8px 18px rgba(236, 72, 153, .45); }
+
+/* Nút quay lại */
+.btn-back { background: #fff; color: #4f46e5; font-weight: 700; border: 2px solid #c7d2fe; border-radius: .8rem; }
+.btn-back:hover { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+
+.pre-line { white-space: pre-line; }
+.form-control, .form-select { border-radius: .8rem; border: 2px solid #e2e8f0; }
+.form-control:focus { border-color: #a78bfa; box-shadow: 0 0 0 .25rem rgba(167, 139, 250, .25); }
+
+/* ===== Animation ===== */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.fade-up { animation: fadeUp .5s ease both; }
+.fade-up.d1 { animation-delay: .08s; }
+.fade-up.d2 { animation-delay: .16s; }
+.fade-up.d3 { animation-delay: .24s; }
+
+/* ===== Login ===== */
+.login-bg {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4f46e5 0%, #9333ea 35%, #ec4899 70%, #f97316 100%);
+}
+.login-card { max-width: 420px; width: 100%; border-radius: 1.5rem; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
+.login-logo {
+    width: 76px; height: 76px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: #fff; font-size: 2.1rem;
+    box-shadow: 0 8px 20px rgba(236, 72, 153, .4);
+}

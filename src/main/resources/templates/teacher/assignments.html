@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Danh sách bài tập')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container pb-5">
+
+    <div class="hero mb-4 fade-up d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1">Xin chào, <span th:text="${currentUser.fullName}">Cô giáo</span> 👋</h3>
+            <p class="mb-0 opacity-75">Quản lý bài tập và xem bài làm của học sinh tại đây.</p>
+        </div>
+        <a th:href="@{/teacher/assignments/new}" class="btn btn-yellow fw-bold">
+            <i class="bi bi-plus-circle-fill me-1"></i> Tạo bài tập
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 fade-up d1">
+            <div class="stat-card stat-1">
+                <i class="bi bi-journal-text icon"></i>
+                <div><div class="num" th:text="${totalCount}">0</div><small>Tổng số bài tập</small></div>
+            </div>
+        </div>
+        <div class="col-md-4 fade-up d2">
+            <div class="stat-card stat-2">
+                <i class="bi bi-hourglass-split icon"></i>
+                <div><div class="num" th:text="${upcomingCount}">0</div><small>Đang mở</small></div>
+            </div>
+        </div>
+        <div class="col-md-4 fade-up d3">
+            <div class="stat-card stat-3">
+                <i class="bi bi-alarm icon"></i>
+                <div><div class="num" th:text="${overdueCount}">0</div><small>Đã hết hạn</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4 fade-up" th:each="a, st : ${assignments}">
+            <div class="card card-lively card-hover h-100" th:classappend="'tone-' + ${st.index % 5}">
+                <img th:if="${a.imagePath}" th:src="@{'/uploads/' + ${a.imagePath}}" class="thumb" alt="">
+                <div th:unless="${a.imagePath}" class="thumb-placeholder"><i class="bi bi-journal-richtext"></i></div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="fw-bold" th:text="${a.title}">Tên bài tập</h5>
+                    <p class="text-muted small flex-grow-1" th:if="${a.description}"
+                       th:text="${#strings.abbreviate(a.description, 90)}">Mô tả</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span th:if="${a.deadline.isBefore(#temporals.createNow())}" class="badge rounded-pill text-bg-danger">
+                            <i class="bi bi-alarm"></i> <span th:text="${#temporals.format(a.deadline, 'dd/MM HH:mm')}"></span>
+                        </span>
+                        <span th:unless="${a.deadline.isBefore(#temporals.createNow())}" class="badge rounded-pill text-bg-success">
+                            <i class="bi bi-clock"></i> <span th:text="${#temporals.format(a.deadline, 'dd/MM HH:mm')}"></span>
+                        </span>
+                        <a th:href="@{/teacher/assignments/{id}(id=${a.id})}" class="btn btn-sm btn-cyan">
+                            Chi tiết <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(assignments)}" class="card card-lively text-center p-5">
+        <div class="display-4">📚</div>
+        <p class="text-muted mb-0">Chưa có bài tập nào. Bấm “Tạo bài tập” để bắt đầu nhé!</p>
+    </div>
+</div>
+</body>
+</html>

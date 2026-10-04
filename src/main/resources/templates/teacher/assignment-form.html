@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tạo bài tập')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container pb-5" style="max-width: 780px;">
+
+    <a th:href="@{/teacher/assignments}" class="btn btn-sm btn-back shadow-sm mb-3">
+        <i class="bi bi-arrow-left"></i> Danh sách bài tập
+    </a>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card card-lively fade-up">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Tạo bài tập mới</h4>
+            <form th:action="@{/teacher/assignments}" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="title">Tên bài tập *</label>
+                    <input type="text" class="form-control" id="title" name="title"
+                           th:value="${title}" maxlength="200" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="description">Mô tả</label>
+                    <textarea class="form-control" id="description" name="description" rows="5"
+                              th:text="${description}"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="deadline">Deadline *</label>
+                    <input type="datetime-local" class="form-control" id="deadline" name="deadline"
+                           th:value="${deadline}" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold" for="image">Hình ảnh bài tập (JPG, PNG, GIF, WEBP, tối đa 5MB)</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <img id="preview" class="img-fluid preview-img mt-3 d-none" alt="Xem trước">
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-ok"><i class="bi bi-save2-fill me-1"></i> Lưu bài tập</button>
+                    <a th:href="@{/teacher/assignments}" class="btn btn-outline-danger">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var input = document.getElementById('image');
+    var prev = document.getElementById('preview');
+    input.addEventListener('change', function () {
+        var f = input.files[0];
+        if (f) {
+            prev.src = URL.createObjectURL(f);
+            prev.classList.remove('d-none');
+        }
+    });
+</script>
+</body>
+</html>

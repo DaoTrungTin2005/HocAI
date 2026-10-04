@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết bài tập')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container pb-5" style="max-width: 900px;">
+
+    <a th:href="@{/student/assignments}" class="btn btn-sm btn-back shadow-sm mb-3">
+        <i class="bi bi-arrow-left"></i> Danh sách bài tập
+    </a>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <!-- Thông tin bài tập -->
+    <div class="card card-lively accent-indigo mb-4 fade-up">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <h3 class="fw-bold" th:text="${assignment.title}">Tên bài tập</h3>
+                <span th:if="${completed}" class="badge text-bg-success fs-6">
+                    <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+                </span>
+            </div>
+            <p class="text-muted mb-2">
+                <i class="bi bi-clock"></i> Deadline:
+                <strong th:text="${#temporals.format(assignment.deadline, 'dd/MM/yyyy HH:mm')}">...</strong>
+                <span th:if="${!completed}" id="countdown" class="badge text-bg-warning ms-1"
+                      th:attr="data-deadline=${assignment.deadline}">...</span>
+            </p>
+            <p class="pre-line" th:text="${assignment.description}">Mô tả</p>
+            <img th:if="${assignment.imagePath}" th:src="@{'/uploads/' + ${assignment.imagePath}}"
+                 class="img-fluid assignment-img mb-3" alt="Hình ảnh bài tập">
+
+            <form th:if="${!completed}" th:action="@{/student/assignments/{id}/complete(id=${assignment.id})}" method="post">
+                <button type="submit" class="btn btn-ok">
+                    <i class="bi bi-check2-circle me-1"></i> Đánh dấu đã hoàn thành
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Các bước -->
+    <div class="stepper mb-4 fade-up d1">
+        <div class="step" th:classappend="${surveyDone} ? 'done' : 'active'">
+            <span class="dot">
+                <i th:if="${surveyDone}" class="bi bi-check-lg"></i>
+                <span th:unless="${surveyDone}">1</span>
+            </span>
+            <span>Trả lời khảo sát</span>
+        </div>
+        <div class="line" th:classappend="${surveyDone} ? 'done'"></div>
+        <div class="step" th:classappend="${submission != null} ? 'done' : (${surveyDone} ? 'active' : '')">
+            <span class="dot">
+                <i th:if="${submission != null}" class="bi bi-check-lg"></i>
+                <span th:unless="${submission != null}">2</span>
+            </span>
+            <span>Gửi bài làm bằng ảnh</span>
+        </div>
+    </div>
+
+    <!-- Bước 1: Khảo sát -->
+    <div class="card card-lively accent-orange mb-4 fade-up d2">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-ui-checks text-warning me-2"></i>Bước 1: Khảo sát</h5>
+            <p class="text-muted mb-0" th:if="${#lists.isEmpty(questions)}">
+                Bài này không có khảo sát, bạn có thể gửi bài làm ngay ở bước 2.
+            </p>
+
+            <form th:if="${!#lists.isEmpty(questions)}"
+                  th:action="@{/student/assignments/{id}/survey(id=${assignment.id})}" method="post">
+                <div class="mb-3" th:each="q, st : ${questions}">
+                    <label class="form-label fw-semibold" th:for="${'answer_' + q.id}">
+                        Câu <span th:text="${st.count}">1</span>: <span th:text="${q.content}">Nội dung</span>
+                    </label>
+                    <textarea class="form-control" rows="2" required
+                              th:id="${'answer_' + q.id}" th:name="${'answer_' + q.id}"
+                              th:text="${myAnswers[q.id]?.content}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-orange">
+                    <i class="bi bi-save2-fill me-1"></i>
+                    <span th:text="${surveyDone} ? 'Cập nhật câu trả lời' : 'Lưu câu trả lời'">Lưu</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bước 2: Gửi bài làm bằng ảnh -->
+    <div class="card card-lively accent-pink fade-up d3">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-camera-fill text-primary me-2"></i>Bước 2: Gửi bài làm bằng ảnh</h5>
+
+            <!-- Chưa trả lời khảo sát: khóa -->
+            <div th:if="${!surveyDone}" class="locked-box">
+                <i class="bi bi-lock-fill"></i>
+                <p class="fw-bold mb-1 mt-2">Bước này đang bị khóa</p>
+                <p class="mb-0">Hãy trả lời hết các câu hỏi khảo sát ở Bước 1 để mở khóa nhé!</p>
+            </div>
+
+            <!-- Đã trả lời khảo sát: cho gửi -->
+            <div th:if="${surveyDone}">
+                <div th:if="${submission != null}" class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge text-bg-success"><i class="bi bi-check-circle-fill"></i> Đã gửi bài</span>
+                        <small class="text-muted">
+                            Lúc <span th:text="${#temporals.format(submission.submittedAt, 'dd/MM/yyyy HH:mm')}">time</span>
+                            · lần <span th:text="${submission.submitCount}">1</span>
+                        </small>
+                    </div>
+                    <img th:src="@{'/uploads/' + ${submission.imagePath}}" class="img-fluid submission-img border"
+                         alt="Bài làm đã gửi">
+                </div>
+
+                <form th:action="@{/student/assignments/{id}/submit(id=${assignment.id})}" method="post"
+                      enctype="multipart/form-data" class="upload-zone">
+                    <label class="form-label fw-semibold" for="imageInput">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <span th:text="${submission != null} ? 'Chọn ảnh mới để gửi lại' : 'Chọn ảnh bài làm của em'">Chọn ảnh</span>
+                    </label>
+                    <input type="file" class="form-control mb-3" id="imageInput" name="image"
+                           accept="image/*" required>
+                    <img id="preview" class="img-fluid preview-img d-none mb-3 border" alt="Xem trước">
+                    <div>
+                        <button type="submit" class="btn btn-pink">
+                            <i class="bi bi-send-fill me-1"></i>
+                            <span th:text="${submission != null} ? 'Gửi lại bài làm' : 'Gửi bài làm'">Gửi</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // Đếm ngược đến deadline
+        var el = document.getElementById('countdown');
+        if (el) {
+            var d = new Date(el.getAttribute('data-deadline'));
+            var tick = function () {
+                var ms = d - new Date();
+                if (0 >= ms) {
+                    el.textContent = 'Đã quá hạn';
+                    el.className = 'badge text-bg-danger ms-1';
+                    return;
+                }
+                var m = Math.floor(ms / 60000);
+                var days = Math.floor(m / 1440);
+                var h = Math.floor((m % 1440) / 60);
+                var mi = m % 60;
+                el.textContent = 'Còn ' + (days > 0 ? days + ' ngày ' : '') + h + ' giờ ' + mi + ' phút';
+            };
+            tick();
+            setInterval(tick, 30000);
+        }
+
+        // Xem trước ảnh trước khi gửi
+        var input = document.getElementById('imageInput');
+        var prev = document.getElementById('preview');
+        if (input) {
+            input.addEventListener('change', function () {
+                var f = input.files[0];
+                if (f) {
+                    prev.src = URL.createObjectURL(f);
+                    prev.classList.remove('d-none');
+                }
+            });
+        }
+    })();
+</script>
+</body>
+</html>

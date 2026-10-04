@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết bài tập')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container pb-5">
+
+    <a th:href="@{/teacher/assignments}" class="btn btn-sm btn-back shadow-sm mb-3">
+        <i class="bi bi-arrow-left"></i> Danh sách bài tập
+    </a>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <!-- Thông tin bài tập -->
+    <div class="card card-lively accent-indigo mb-4 fade-up">
+        <div class="card-body p-4">
+            <h3 class="fw-bold" th:text="${assignment.title}">Tên bài tập</h3>
+            <p class="text-muted mb-3">
+                <i class="bi bi-clock"></i> Deadline:
+                <strong th:text="${#temporals.format(assignment.deadline, 'dd/MM/yyyy HH:mm')}">...</strong>
+                · <i class="bi bi-person"></i> <span th:text="${assignment.createdBy.fullName}">GV</span>
+            </p>
+            <p class="pre-line" th:text="${assignment.description}">Mô tả</p>
+            <img th:if="${assignment.imagePath}" th:src="@{'/uploads/' + ${assignment.imagePath}}"
+                 class="img-fluid assignment-img" alt="Hình ảnh bài tập">
+        </div>
+    </div>
+
+    <!-- Bài làm của học sinh -->
+    <div class="card card-lively accent-cyan mb-4 fade-up d1">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-images text-primary me-2"></i>Bài làm của học sinh
+                (<span th:text="${#lists.size(submissions)}">0</span>)
+            </h5>
+            <p class="text-muted" th:if="${#lists.isEmpty(submissions)}">Chưa có học sinh nào gửi bài làm.</p>
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-4" th:each="s : ${submissions}">
+                    <div class="border rounded-4 p-2 h-100">
+                        <a th:href="@{'/uploads/' + ${s.imagePath}}" target="_blank">
+                            <img th:src="@{'/uploads/' + ${s.imagePath}}" class="w-100 rounded-3"
+                                 style="height: 180px; object-fit: cover;" alt="Bài làm">
+                        </a>
+                        <div class="p-2">
+                            <div class="fw-bold" th:text="${s.student.fullName}">HS</div>
+                            <small class="text-muted d-block">
+                                <span th:text="${s.student.studyGroup}">Nhóm</span> ·
+                                <span th:text="${#temporals.format(s.submittedAt, 'dd/MM/yyyy HH:mm')}">time</span>
+                            </small>
+                            <span class="badge text-bg-light border mt-1">
+                                Gửi <span th:text="${s.submitCount}">1</span> lần
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Học sinh đã hoàn thành -->
+    <div class="card card-lively accent-green mb-4 fade-up d2">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-patch-check-fill text-success me-2"></i>Học sinh đã hoàn thành
+                (<span th:text="${#lists.size(completions)}">0</span>)
+            </h5>
+            <div class="table-responsive" th:if="${!#lists.isEmpty(completions)}">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Học sinh</th><th>Nhóm</th><th>Hoàn thành lúc</th></tr></thead>
+                    <tbody>
+                    <tr th:each="c : ${completions}">
+                        <td th:text="${c.student.fullName}">HS</td>
+                        <td th:text="${c.student.studyGroup}">Nhóm</td>
+                        <td th:text="${#temporals.format(c.completedAt, 'dd/MM/yyyy HH:mm')}">time</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted mb-0" th:if="${#lists.isEmpty(completions)}">Chưa có học sinh nào hoàn thành.</p>
+        </div>
+    </div>
+
+    <!-- Khảo sát -->
+    <div class="card card-lively accent-orange fade-up d3">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-ui-checks text-warning me-2"></i>Câu hỏi khảo sát</h5>
+
+            <form th:action="@{/teacher/assignments/{id}/questions(id=${assignment.id})}" method="post" class="mb-4">
+                <label class="form-label fw-semibold" for="content">Thêm câu hỏi mới</label>
+                <textarea class="form-control mb-2" id="content" name="content" rows="2"
+                          placeholder="Ví dụ: Em thấy bài tập này khó ở điểm nào?" required></textarea>
+                <button type="submit" class="btn btn-orange btn-sm"><i class="bi bi-plus-lg"></i> Thêm câu hỏi</button>
+            </form>
+
+            <p class="text-muted" th:if="${#lists.isEmpty(questions)}">Chưa có câu hỏi nào.</p>
+
+            <div th:each="q, st : ${questions}" class="border rounded-4 p-3 mb-3">
+                <div class="fw-bold mb-2">
+                    Câu <span th:text="${st.count}">1</span>: <span th:text="${q.content}">Nội dung</span>
+                </div>
+                <ul class="list-group list-group-flush" th:if="${answersByQuestion[q.id] != null}">
+                    <li class="list-group-item px-0" th:each="a : ${answersByQuestion[q.id]}">
+                        <strong th:text="${a.student.fullName}">HS</strong>
+                        <small class="text-muted"
+                               th:text="'(' + ${#temporals.format(a.answeredAt, 'dd/MM/yyyy HH:mm')} + ')'"></small>
+                        <div class="pre-line" th:text="${a.content}">Trả lời</div>
+                    </li>
+                </ul>
+                <p class="text-muted small mb-0" th:if="${answersByQuestion[q.id] == null}">Chưa có câu trả lời.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
